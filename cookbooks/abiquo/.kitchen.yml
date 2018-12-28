@@ -1,0 +1,162 @@
+driver:
+  name: vagrant
+  customize:
+    memory: 1024
+
+provisioner:
+  name: chef_zero
+  chef_zero_port: 8899
+  require_chef_omnibus: 12.16.42
+  data_path: test/fixtures
+
+transport:
+  compression: none
+
+platforms:
+  - name: c6
+    driver:
+      box: bento/centos-6.8
+  - name: c7
+    driver:
+      box: bento/centos-7.3
+
+suites:
+  - name: monolithic
+    run_list:
+      - recipe[abiquo::default]
+      - recipe[abiquo::upgrade]
+    attributes:
+      abiquo:
+        db:
+          enable-master: true
+        ui_config:
+          config.endpoint: "https://monolithic.abiquo.com/api"
+        ui_apache_opts:
+          KeepAlive: "On"
+          MaxKeepAliveRequests: 100
+          KeepAliveTimeout: 60
+        ui_proxies:
+          /am2: 
+            url: http://some_am:8009/am
+          /cms:
+            url: https://some_cms/blah
+            options:
+              Header: add "Access-Control-Allow-Origin" "*"
+        certificate:
+          common_name: monolithic.abiquo.com
+  - name: server
+    run_list:
+      - recipe[abiquo::default]
+      - recipe[abiquo::upgrade]
+    attributes:
+      abiquo:
+        profile: server
+        db:
+          user: abiquo
+          password: abiquo
+        ui_config:
+          config.endpoint: "https://server.abiquo.com/api"
+          client.backto.url: "http://google.com"
+          client.google.maps.key: "trocotro"
+          client.test.timeout: 600
+          config.languages:
+            - value: en_US
+              name: US English
+              isDefault: true
+          client.themes:
+            - abicloudDefault
+            - someothertheme
+        ui_apache_opts:
+          KeepAlive: "On"
+          MaxKeepAliveRequests: 100
+          KeepAliveTimeout: 60
+        ui_proxies:
+          /am2:
+            url: http://some_am:8009/am
+        certificate:
+          common_name: server.abiquo.com
+  - name: frontend
+    run_list:
+      - recipe[abiquo::default]
+      - recipe[abiquo::upgrade]
+    attributes:
+      abiquo:
+        profile: frontend
+        ui_config:
+          config.endpoint: "https://server.abiquo.com/api"
+          client.backto.url: "http://google.com"
+          client.google.maps.key: "trocotro"
+          client.test.timeout: 600
+        ui_proxies:
+          /api:
+            url: ajp://some_api:8010/api
+          /cms:
+            url: https://some_cms/blah
+            options:
+              Header: add "Access-Control-Allow-Origin" "*"
+        certificate:
+          common_name: frontend.abiquo.com
+  - name: ui
+    run_list:
+      - recipe[abiquo::default]
+      - recipe[abiquo::upgrade]
+    attributes:
+      abiquo:
+        profile: ui
+        ui_config:
+          config.endpoint: "https://server.abiquo.com/api"
+          client.backto.url: "http://google.com"
+          client.google.maps.key: "trocotro"
+          client.test.timeout: 600
+        certificate:
+          common_name: server.abiquo.com
+  - name: websockify
+    run_list:
+      - recipe[abiquo::default]
+      - recipe[abiquo::upgrade]
+    attributes:
+      abiquo:
+        profile: websockify
+        certificate:
+          common_name: ws.abiquo.com
+  - name: remoteservices
+    run_list:
+      - recipe[abiquo::default]
+      - recipe[abiquo::upgrade]
+    attributes:
+      abiquo:
+        profile: remoteservices
+  - name: v2v
+    run_list:
+      - recipe[abiquo::default]
+      - recipe[abiquo::upgrade]
+    attributes:
+      abiquo:
+        profile: v2v
+  - name: kvm
+    excludes:
+      - c6
+    run_list:
+      - recipe[abiquo::default]
+      - recipe[abiquo::upgrade]
+    attributes:
+      abiquo:
+        profile: kvm
+        aim:
+         include_neutron: true
+  - name: monitoring
+    run_list:
+      # The Delorean service needs a running RabbitMQ instance
+      - recipe[abiquo::repository]
+      - recipe[rabbitmq]
+      - recipe[abiquo::default]
+      - recipe[abiquo::upgrade]
+    attributes:
+      abiquo:
+        profile: monitoring
+        monitoring:
+          rabbitmq:
+            username: guest
+            password: guest
+      rabbitmq:
+        version: 3.5.4

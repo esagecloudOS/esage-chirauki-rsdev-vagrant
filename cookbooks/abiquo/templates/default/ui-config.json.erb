@@ -1,0 +1,5 @@
+{
+<% @ui_props.keys.each_with_index do |k, i| %>
+    "<%= k %>": <%= @ui_props[k].class == String ? "\"#{@ui_props[k]}\"" : @ui_props[k] %><%= "," if i != @ui_props.count - 1 %>
+<% end %>
+}

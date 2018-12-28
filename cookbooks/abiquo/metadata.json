@@ -1,0 +1,82 @@
+{
+  "name": "abiquo",
+  "description": "Installs and configures an Abiquo platform",
+  "long_description": "Abiquo Cookbook\n===============\n\n[![Build Status](https://travis-ci.org/abiquo/abiquo-cookbook.svg?branch=master)](https://travis-ci.org/abiquo/abiquo-cookbook)\n[![Abiquo Cookbook](http://img.shields.io/badge/cookbook-v0.11.0-blue.svg?style=flat)](https://supermarket.chef.io/cookbooks/abiquo)\n[![Chef Version](http://img.shields.io/badge/chef-v12.16.42-orange.svg?style=flat)](https://www.chef.io)\n\nThis cookbook provides several recipes to install and upgrade an Abiquo platform.\nIt allows you to provision an Abiquo Server, the Remote Services server, standalone V2V\nserver, monitoring server, frontend components and a KVM hypervisor from scratch,\nas long as upgrading an existing Abiquo installation.\n\n# Usage\n\nThe cookbook is pretty straightforwatd to use. Just set the `node['abiquo']['profile']` attribute\naccording to the profile you want to install or upgrade and and include one of the following recipes\nin the run list:\n\n* `recipe[abiquo]` - To perform an installation from scratch\n* `recipe[abiquo::upgrade]` - To upgrade an existing installation\n\nThe available profiles are: \n\n- `monolithic` sets up all Abiquo components in one host.\n- `remoteservices` sets up the Abiquo remote services (except V2V).\n- `server` sets up the Abiquo management components (API, M) plus the frontend components (UI, websockify).\n- `ui` sets up the Abiquo UI.\n- `websockify` sets up the Websockify proxy for noVNC connections.\n- `frontend` sets up the frontend components, UI and Websockify.\n- `v2v` sets up the Abiquo V2V conversion manager.\n- `kvm` sets up an Abiquo KVM cloud node.\n- `monitoring` sets up the monitoring components of the Abiquo platform\n- `ext_services` sets up the management components' supporting databases (MariaDB, Redis) and the RabbitMQ message bus.\n\nWhen installing the Abiquo Monolithic profile, you may also want to set the `node['abiquo']['certificate']`\nproperties so the right certificate is used or a self-signed one is generated. You can also use it together\nwith the [hostnames](http://community.opscode.com/cookbooks/hostnames) cookbook to make sure the node will have it properly configured.\n\n# Testing\n\nIn order to test the cookbook you will need to install [Vagrant](https://www.vagrantup.com/) and [VirtualBox](https://www.virtualbox.org/). \n\n* Tested on:\n\n| Operating System | Vagrant version | VirtualBox version |\n|---|---|---|\n| Fedora 25 |  1.8.5 | 5.1.14r112924 |\n| OS X 10.12.2 | 1.9.1 | 5.0.32r112930 |\n\nOnce installed you can run the unit and integration tests as follows:\n\n    bundle install\n    bundle exec berks         # Install the cookbook dependencies\n    bundle exec rake          # Run the unit and style tests\n    bundle exec rake kitchen  # Run the integration tests\n\nThe tests and Gemfile have been developed using Ruby 2.2.5, and that is the recommended Ruby version to use to run the tests.\nOther versions may cause conflicts with the versions of the gems Bundler will install.\n\n## RHEL testing\n\nIntegration tests for RHEL are specified in a separate ```.kitchen.rhel.yml``` file. They use a vagrant box named ```rhel-6.8``` which you will need to build and add to the host running the tests as described in [bento project repository](https://github.com/chef/bento).\n\nOnce the box is available in the host, you can run the tests by specifying the kitchen config file to use and the user and password so the VM can register to RedHat and get a subscription.\n\n```\n$ KITCHEN_LOCAL_YAML=.kitchen.rhel.yml RHN_USERNAME=some_user RHN_PASSWORD=some_pass bundle exec rake kitchen-basic\n```\n\n# License and Authors\n\n* Author:: Ignasi Barrera (ignasi.barrera@abiquo.com)\n* Author:: Marc Cirauqui (marc.cirauqui@abiquo.com)\n\nCopyright:: 2014, Abiquo\n\nLicensed under the Apache License, Version 2.0 (the \"License\");\nyou may not use this file except in compliance with the License.\nYou may obtain a copy of the License at\n\n    http://www.apache.org/licenses/LICENSE-2.0\n\nUnless required by applicable law or agreed to in writing, software\ndistributed under the License is distributed on an \"AS IS\" BASIS,\nWITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.\nSee the License for the specific language governing permissions and\nlimitations under the License.\n",
+  "maintainer": "Abiquo",
+  "maintainer_email": "ignasi.barrera@abiquo.com",
+  "license": "Apache 2.0",
+  "platforms": {
+    "centos": ">= 6.7.0",
+    "redhat": ">= 6.7.0"
+  },
+  "dependencies": {
+    "apache2": "~> 3.1.0",
+    "cassandra-dse": "~> 4.1.0",
+    "iptables": "~> 2.0.1",
+    "java": "~> 1.46.0",
+    "java-management": "~> 1.0.3",
+    "selinux": "~> 0.9.0",
+    "ssl_certificate": "~> 1.11.0",
+    "yum": "~> 3.10.0",
+    "yum-epel": "~> 0.6.5",
+    "redisio": "~> 2.5.0",
+    "mariadb": "~> 1.0.1",
+    "database": "~> 5.1.2",
+    "mysql2_chef_gem": "~> 1.1.0",
+    "rabbitmq": "~> 4.9.0",
+    "haproxy-ng": "~> 1.2.0",
+    "sysctl": "~> 0.8.1",
+    "kernel-modules": "~> 0.1.4"
+  },
+  "recommendations": {
+  },
+  "suggestions": {
+  },
+  "conflicting": {
+  },
+  "providing": {
+  },
+  "replacing": {
+  },
+  "attributes": {
+  },
+  "groupings": {
+  },
+  "recipes": {
+    "abiquo": "Installs and configures an Abiquo platform",
+    "abiquo::repository": "Configures the Abiquo yum repositories",
+    "abiquo::install_monolithic": "Installs the Abiquo Monolithic packages",
+    "abiquo::install_remoteservices": "Installs the Abiquo Remote Services",
+    "abiquo::install_server": "Installs the Abiquo Management Server",
+    "abiquo::install_v2v": "Installs an standalone V2V server",
+    "abiquo::install_kvm": "Installs a KVM hypervisor",
+    "abiquo::install_monitoring": "Installs an Abiquo monitoring node with a Cassandra backed KairosDB",
+    "abiquo::install_mariadb": "Installs the MariaDB database",
+    "abiquo::install_rabbitmq]": "Installs the RabbitMQ message broker",
+    "abiquo::install_redis]": "Installs the Redis database",
+    "abiquo::setup_monolithic": "Configures and starts the Abiquo Platform",
+    "abiquo::setup_remoteservices": "Configures and starts the Abiquo Remote Services",
+    "abiquo::setup_server": "Configures the Abiquo Management Server",
+    "abiquo::setup_v2v": "Configures an standalone V2V server",
+    "abiquo::setup_kvm": "Configures a KVM hypervisor",
+    "abiquo::setup_monitoring": "Configures and starts the Abiquo monitoring services",
+    "abiquo::upgrade": "Upgrades an Abiquo platform",
+    "abiquo::install_database": "Creates the Abiquo database",
+    "abiquo::install_ext_services": "Installs Abiquo supporting services (MariaDB, RabbitMQ, Redis)",
+    "abiquo::certificate": "Installs a custom SSL certificate in the Apache",
+    "abiquo::service": "Manages Abiquo tomcat service"
+  },
+  "version": "0.11.0",
+  "source_url": "https://github.com/abiquo/abiquo-cookbook",
+  "issues_url": "https://github.com/abiquo/abiquo-cookbook/issues",
+  "privacy": false,
+  "chef_versions": [
+
+  ],
+  "ohai_versions": [
+
+  ],
+  "gems": [
+
+  ]
+}

@@ -1,0 +1,45 @@
+{
+  "name": "rhn_register",
+  "description": "Registers and unregisters a node from RHN",
+  "long_description": "# rhn_register cookbook",
+  "maintainer": "Abiquo",
+  "maintainer_email": "marc.cirauqui@abiquo.com",
+  "license": "Apache 2.0",
+  "platforms": {
+    "redhat": ">= 6.7.0"
+  },
+  "dependencies": {
+    "redhat_subscription_manager": "~> 0.5.0"
+  },
+  "recommendations": {
+  },
+  "suggestions": {
+  },
+  "conflicting": {
+  },
+  "providing": {
+  },
+  "replacing": {
+  },
+  "attributes": {
+  },
+  "groupings": {
+  },
+  "recipes": {
+    "rhn_register::register": "Installs and configures an Abiquo platform",
+    "rhn_register::unregister": "Installs and configures an Abiquo platform"
+  },
+  "version": "0.0.1",
+  "source_url": "",
+  "issues_url": "",
+  "privacy": false,
+  "chef_versions": [
+
+  ],
+  "ohai_versions": [
+
+  ],
+  "gems": [
+
+  ]
+}
